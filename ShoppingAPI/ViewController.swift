@@ -9,68 +9,21 @@ import UIKit
 import SnapKit
 
 
-class ViewController: UIViewController {
+class ViewController: BaseViewController {
     
-    let searchBar = UISearchBar()
-    let titleLabel = {
-        let label = UILabel()
-        label.text = "쇼핑쇼핑"
-        label.textColor = .white
-        return label
-    }()
-    let mainImage = {
-        let img = UIImageView()
-        img.image = UIImage(named: "shoppingImage")
-        return img
-    }()
-    let centerLabel = {
-        let label = UILabel()
-        label.text = "쇼핑하러GO"
-        label.textColor = .white
-        label.font = .boldSystemFont(ofSize: 18)
-        return label
-    }()
-
+    var mainSearchView = SearchView()
+    override func loadView() {
+        view = mainSearchView
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        navigationItem.titleView = titleLabel
+        navigationItem.titleView = mainSearchView.titleLabel
         //navigationItem.title = "도봉러의 쇼핑쇼핑"
         //navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor : UIColor.white.cgColor]
-        view.backgroundColor = .black
-        searchBar.delegate = self
-        configureView()
-        configureSearchBar()
-        
+        mainSearchView.searchBar.delegate = self
     }
-    func configureView() {
-        view.addSubview(searchBar)
-        view.addSubview(mainImage)
-        view.addSubview(centerLabel)
-        
-        searchBar.snp.makeConstraints { make in
-            make.centerX.equalToSuperview()
-            make.top.equalTo(view.safeAreaLayoutGuide).offset(20)
-            make.horizontalEdges.equalTo(view.safeAreaLayoutGuide).inset(10)
-            make.height.equalTo(30)
-        }
-        mainImage.snp.makeConstraints { make in
-            make.center.equalToSuperview()
-            make.size.equalTo(250)
-        }
-        centerLabel.snp.makeConstraints { make in
-            make.centerX.equalTo(mainImage)
-            make.top.equalTo(mainImage.snp.bottom).offset(40)
-        }
 
-
-    }
-    func configureSearchBar() {
-        searchBar.searchTextField.attributedPlaceholder = NSAttributedString(string: "브랜드,상품,프로필,태그 등", attributes: [NSAttributedString.Key.foregroundColor : UIColor.lightGray])
-        searchBar.layer.cornerRadius = 5
-        searchBar.clipsToBounds = true
-        searchBar.barTintColor = .darkGray
-        searchBar.searchTextField.leftView?.tintColor = .lightGray
-    }
 }
 
 extension ViewController: UISearchBarDelegate {
@@ -82,7 +35,34 @@ extension ViewController: UISearchBarDelegate {
             vc.searchedText = trimmedInput
             navigationController?.pushViewController(vc, animated: true)
             view.endEditing(true)
+            searchBar.text = ""
         }
-        
+        else {
+            let alert = UIAlertController(title: "주의", message: "두 글자 이상을 입력하세요.", preferredStyle: .alert)
+            let ok = UIAlertAction(title: "확인", style: .default) { _ in
+                searchBar.text = ""
+            }
+            let cancel = UIAlertAction(title: "싫어요", style: .cancel) { _ in
+                self.showAlert(title: "나가", text: "쇼핑 하지 마세요") {
+                    searchBar.text = ""
+                }
+            }
+            alert.addAction(ok)
+            alert.addAction(cancel)
+            present(alert, animated: true)
+            
+        }
+    }
+}
+
+extension UIViewController  {
+    func showAlert(title: String, text: String, action: (() -> Void)? = nil) {
+    
+        let alert = UIAlertController(title: title, message: text, preferredStyle: .alert)
+        let ok = UIAlertAction(title: "확인", style: .default) { _ in
+            action?()
+        }
+        alert.addAction(ok)
+        present(alert, animated: true)
     }
 }

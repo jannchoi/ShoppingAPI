@@ -9,7 +9,7 @@ import UIKit
 import Kingfisher
 import SnapKit
 
-class SearchResultCollectionViewCell: UICollectionViewCell {
+class SearchResultCollectionViewCell: BaseCollectionViewCell {
     static let id = "SearchResultCollectionViewCell"
     
     let itemImage = UIImageView()
@@ -27,8 +27,8 @@ class SearchResultCollectionViewCell: UICollectionViewCell {
         
         malName.text = item.mallName
         itemName.text = replaceText(text: item.title)
-        var strPrice = item.lprice
-        var intPrice = Int(strPrice)?.formatted()
+        let strPrice = item.lprice
+        let intPrice = Int(strPrice)?.formatted()
         lowPrice.text = "\(intPrice ?? strPrice)"
     }
     func replaceText(text: String) -> String {
@@ -36,12 +36,13 @@ class SearchResultCollectionViewCell: UICollectionViewCell {
         result = result.replacingOccurrences(of: "</b>", with: "")
         return result
     }
-    func configureView() {
+    override func configureHierachy() {
         contentView.addSubview(itemImage)
         contentView.addSubview(malName)
         contentView.addSubview(itemName)
         contentView.addSubview(lowPrice)
-        
+    }
+    override func configureLayout() {
         itemImage.snp.makeConstraints { make in
             make.top.horizontalEdges.equalToSuperview()
             make.height.equalTo(self.snp.width)
@@ -63,7 +64,8 @@ class SearchResultCollectionViewCell: UICollectionViewCell {
             make.top.equalTo(itemName.snp.bottom).offset(2)
             make.height.equalTo(25)
         }
-        
+    }
+    override func configureView() {
         itemImage.layer.cornerRadius = 8
         itemImage.clipsToBounds = true
         malName.textColor = .gray
@@ -74,10 +76,5 @@ class SearchResultCollectionViewCell: UICollectionViewCell {
         itemName.numberOfLines = 2
         lowPrice.font = .boldSystemFont(ofSize: 20)
         lowPrice.textColor = .white
-    }
-    
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
     }
 }
