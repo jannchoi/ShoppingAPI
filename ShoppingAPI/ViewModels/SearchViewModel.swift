@@ -16,15 +16,15 @@ final class SearchViewModel {
     init() {
         print("SearchViewModel init")
         
-        inputSearchedTerm.lazyBind { _ in
+        inputSearchedTerm.bind { _ in
             self.checkSearchedTerm()
         }
     }
     
     deinit {
-        print("SearchViewModel init")
+        print("SearchViewModel deinit")
     }
-    func checkSearchedTerm() {
+    private func checkSearchedTerm() {
         guard let input = inputSearchedTerm.value else {return}
         let trimmedInput = input.trimmingCharacters(in: .whitespacesAndNewlines)
         

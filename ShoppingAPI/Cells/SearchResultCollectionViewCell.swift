@@ -9,7 +9,7 @@ import UIKit
 import Kingfisher
 import SnapKit
 
-class SearchResultCollectionViewCell: BaseCollectionViewCell {
+final class SearchResultCollectionViewCell: BaseCollectionViewCell {
     static let id = "SearchResultCollectionViewCell"
     
     let itemImage = UIImageView()

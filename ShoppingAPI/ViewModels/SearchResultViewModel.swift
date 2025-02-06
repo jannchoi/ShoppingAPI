@@ -11,12 +11,15 @@ class SearchResultViewModel {
     
     var inputLoadDataTrigger: Observable<Void?> = Observable(nil)
     var inputButtonTapped: Observable<Int?> = Observable(nil)
-    
-    var inputSort = "sim"
-    
+    var inputPrefetchingTrigger: Observable<Int?> = Observable(nil)
+
     var outputSearchedTerm: Observable<String?> = Observable(nil)
-    var outputItem: Observable<Shop?> = Observable(nil)
+    var outputItem: Observable<[itemDetail]> = Observable([])
     var outputErrorMessage: Observable<String?> = Observable("")
+    var total = 0
+    private var inputSort = "sim"
+    private var page = 1
+    private var isEnd = false
     
     init() {
         print("SearchResultViewModel init")
@@ -28,10 +31,22 @@ class SearchResultViewModel {
         inputButtonTapped.lazyBind { _ in
             self.changeOrder()
         }
+        inputPrefetchingTrigger.lazyBind { _ in
+            self.isprefetchItem()
+        }
     }
     
     deinit {
         print("SearchResultViewModel deinit")
+    }
+    
+    private func isprefetchItem() {
+        guard let idx = self.inputPrefetchingTrigger.value else {return}
+        if self.outputItem.value.count - 4 <= idx && self.isEnd == false {
+            print(page)
+            page += 1
+            loadData()
+        }
     }
     
     private func loadData() {
@@ -39,7 +54,17 @@ class SearchResultViewModel {
         NetworkManager.shared.callRequest(query: query, sort: inputSort, page : 1) { response in
             switch response {
             case .success(let value) :
-                self.outputItem.value = value
+                if self.page * 20 > value.total {
+                    self.isEnd = true
+                    return
+                }
+                if self.page == 1 {
+                    self.total = value.total
+                    self.outputItem.value = value.items
+
+                } else {
+                    self.outputItem.value.append(contentsOf: value.items)
+                }
             case .failure(let failure) :
                 if let errorType = failure as? NetworkError {
                     self.outputErrorMessage.value = errorType.errorMessage
@@ -63,6 +88,7 @@ class SearchResultViewModel {
             case .none:
                 return
             }
+            self.page = 1
             self.loadData()
         }
     }

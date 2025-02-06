@@ -8,10 +8,10 @@
 import Foundation
 
 enum NetworkError: Error {
-    case badRequest //400
-    case unauthorized //403
-    case notFound //404
-    case systemError //500
+    case badRequest
+    case unauthorized
+    case notFound
+    case systemError 
     
     var errorMessage : String {
         switch self {
