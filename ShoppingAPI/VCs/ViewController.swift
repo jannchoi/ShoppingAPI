@@ -10,16 +10,19 @@ final class ViewController: BaseViewController {
     
     var mainSearchView = SearchView()
     
-    let viewModel = SearchViewModel()
+    private let viewModel = SearchViewModel()
+    
     
     override func loadView() {
         view = mainSearchView
     }
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
+        print(#function)
         navigationItem.titleView = mainSearchView.titleLabel
         mainSearchView.searchBar.delegate = self
+        mainSearchView.searchBar.becomeFirstResponder()
         
         bindData()
     }
@@ -29,12 +32,16 @@ final class ViewController: BaseViewController {
             if let text {
                 let vc = SearchResultViewController()
                 vc.viewModel.outputSearchedTerm.value = text
+                print("====")
                 self?.navigationController?.pushViewController(vc, animated: true)
             } else {
                 self?.showAlert(text: "두 글자 이상을 입력하세요.", button: nil)
             }
             self?.mainSearchView.searchBar.text = ""
         }
+    }
+    deinit {
+        print("ViewController deinit")
     }
 
 }

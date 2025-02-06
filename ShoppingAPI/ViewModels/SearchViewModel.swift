@@ -16,7 +16,7 @@ final class SearchViewModel {
     init() {
         print("SearchViewModel init")
         
-        inputSearchedTerm.bind { _ in
+        inputSearchedTerm.lazyBind { _ in
             self.checkSearchedTerm()
         }
     }

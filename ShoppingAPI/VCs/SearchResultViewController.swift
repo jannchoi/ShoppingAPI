@@ -13,6 +13,7 @@ final class SearchResultViewController: UIViewController {
     let viewModel = SearchResultViewModel()
     var searchedText : String?
     
+    
     override func loadView() {
         view = mainView
     }
@@ -34,7 +35,6 @@ final class SearchResultViewController: UIViewController {
             self?.viewModel.inputLoadDataTrigger.value = ()
         }
         viewModel.outputItem.lazyBind { [weak self] shop in
-            print("outputItem bind", self?.viewModel.total)
             self?.mainView.collectionView.reloadData()
             self?.mainView.totalCount.text  = String(self?.viewModel.total.formatted() ?? "") + " 개의 검색 결과"
         }
@@ -67,6 +67,9 @@ final class SearchResultViewController: UIViewController {
                 buttonList[i].titleDesign(title: buttonList[i].title(for: .normal)!, size: 14, color: UIColor.white.cgColor)
             }
         }
+    }
+    deinit {
+        print("SearchResultViewController deinit")
     }
     
 }

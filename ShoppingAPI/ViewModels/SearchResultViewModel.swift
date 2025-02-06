@@ -42,8 +42,7 @@ class SearchResultViewModel {
     
     private func isprefetchItem() {
         guard let idx = self.inputPrefetchingTrigger.value else {return}
-        if self.outputItem.value.count - 4 <= idx && self.isEnd == false {
-            print(page)
+        if self.outputItem.value.count - 16 <= idx && self.isEnd == false {
             page += 1
             loadData()
         }
@@ -51,10 +50,10 @@ class SearchResultViewModel {
     
     private func loadData() {
         guard let query = outputSearchedTerm.value else {return}
-        NetworkManager.shared.callRequest(query: query, sort: inputSort, page : 1) { response in
+        NetworkManager.shared.callRequest(query: query, sort: inputSort, page : self.page) { response in
             switch response {
             case .success(let value) :
-                if self.page * 20 > value.total {
+                if self.page * 100 > value.total {
                     self.isEnd = true
                     return
                 }
