@@ -28,7 +28,7 @@ class ShopView: BaseView {
         let button = UIButton()
         button.tag = tagInt
         button.setTitle(title, for: .normal)
-        button.setAttributedTitle(NSAttributedString(string: title, attributes: [NSAttributedString.Key.font : UIFont.systemFont(ofSize: 14), NSAttributedString.Key.foregroundColor : UIColor.white.cgColor]), for: .normal)
+        button.titleDesign(title: title, size: 14, color: UIColor.white.cgColor)
         button.backgroundColor = .black
         button.layer.borderWidth = 1
         button.layer.borderColor = UIColor.white.cgColor
@@ -93,3 +93,4 @@ class ShopView: BaseView {
         collectionView.register(SearchResultCollectionViewCell.self, forCellWithReuseIdentifier: "SearchResultCollectionViewCell")
     }
 }
+

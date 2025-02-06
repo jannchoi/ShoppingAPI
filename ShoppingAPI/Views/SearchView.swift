@@ -8,6 +8,7 @@
 import UIKit
 
 class SearchView: BaseView {
+    
     let searchBar = UISearchBar()
     let titleLabel = UILabel()
     let mainImage = {
@@ -17,11 +18,13 @@ class SearchView: BaseView {
     }()
     let centerLabel = UILabel()
     
+    
     override func configureHierachy() {
         addSubview(searchBar)
         addSubview(mainImage)
         addSubview(centerLabel)
     }
+    
     override func configureLayout() {
         searchBar.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
@@ -38,6 +41,7 @@ class SearchView: BaseView {
             make.top.equalTo(mainImage.snp.bottom).offset(40)
         }
     }
+    
     override func configureView() {
         backgroundColor = .black
         searchBar.searchTextField.attributedPlaceholder = NSAttributedString(string: "브랜드,상품,프로필,태그 등", attributes: [NSAttributedString.Key.foregroundColor : UIColor.lightGray])
@@ -50,9 +54,11 @@ class SearchView: BaseView {
         labelDesign(label: centerLabel, title: "쇼핑하러Go", color: .white)
         centerLabel.font = .boldSystemFont(ofSize: 18)
     }
+    
     func labelDesign(label: UILabel, title: String, color: UIColor) {
         label.text = title
         label.textColor = color
     }
     
 }
+

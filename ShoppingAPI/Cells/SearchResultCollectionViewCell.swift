@@ -27,9 +27,7 @@ class SearchResultCollectionViewCell: BaseCollectionViewCell {
         
         malName.text = item.mallName
         itemName.text = replaceText(text: item.title)
-        let strPrice = item.lprice
-        let intPrice = Int(strPrice)?.formatted()
-        lowPrice.text = "\(intPrice ?? strPrice)"
+        lowPrice.text = NumberFormatter.formatter.StringIntFormat(value: item.lprice)
     }
     func replaceText(text: String) -> String {
         var result = text.replacingOccurrences(of: "<b>", with: "")
