@@ -6,13 +6,15 @@
 //
 
 import UIKit
+import RxSwift
+import RxCocoa
 
 final class SearchResultViewController: UIViewController {
     
     var mainView = ShopView()
     let viewModel = SearchResultViewModel()
     var searchedText : String?
-    
+    let disposeBag = DisposeBag()
     
     override func loadView() {
         view = mainView
@@ -20,42 +22,46 @@ final class SearchResultViewController: UIViewController {
     lazy var buttonList = [mainView.simOrder, mainView.dateOrder, mainView.ascOrder, mainView.dscOrder]
     override func viewDidLoad() {
         super.viewDidLoad()
-        print(#function)
-        mainView.collectionView.delegate = self
-        mainView.collectionView.dataSource = self
         mainView.collectionView.prefetchDataSource = self
-        setAction()
         bindData()
 
     }
     private func bindData() {
-        viewModel.outputSearchedTerm.bind { [weak self] text in
-            self?.mainView.titleLabel.text = text
-            self?.navigationItem.titleView = self?.mainView.titleLabel
-            self?.viewModel.inputLoadDataTrigger.value = ()
+        let tappedButton = PublishSubject<Int>()
+        let input = SearchResultViewModel.Input(tappedButton: tappedButton, prefetchItems:  mainView.collectionView.rx.prefetchItems)
+        let output = viewModel.transform(input: input)
+        
+        
+        for button in buttonList {
+            button.rx.tap.map{button.tag}
+                .bind(to: tappedButton).disposed(by: disposeBag)
         }
-        viewModel.outputItem.lazyBind { [weak self] shop in
-            self?.mainView.collectionView.reloadData()
-            self?.mainView.totalCount.text  = String(self?.viewModel.total.formatted() ?? "") + " 개의 검색 결과"
-        }
+        output.selecteButtonIdx.drive(with: self) { owner, value in
+            owner.mainView.collectionView.scrollToItem(at: IndexPath(item: 0, section: 0), at: .top, animated: false)
+            owner.switchButtonColor(selected: value)
+        }.disposed(by: disposeBag)
+        
+        output.shopData.map{String($0.total)}.asDriver(onErrorJustReturn: "0")
+            .drive(with: self) {
+                owner, value in
+                owner.navigationController?.navigationItem.title = value + "개의 검색 결과"
+            }.disposed(by: disposeBag)
+        
+        output.shopData
+            .map{$0.items}
+            .bind(to: mainView.collectionView.rx.items(cellIdentifier: SearchResultCollectionViewCell.id, cellType: SearchResultCollectionViewCell.self))
+        {
+            (item, element, cell) in
+            cell.configureData(item: element)
+        }.disposed(by: disposeBag)
+
         viewModel.outputErrorMessage.lazyBind { [weak self] message in
             if let message {
                 self?.showAlert(text: message, button: nil)
             }
         }
+
     }
-    private func setAction() {
-        buttonList.forEach { button in
-            button.addTarget(self, action: #selector(buttonTapped), for: .touchUpInside)
-        }
-    }
-    
-    @objc private func buttonTapped(_ button: UIButton)  {
-        viewModel.inputButtonTapped.value = button.tag
-        mainView.collectionView.scrollToItem(at: IndexPath(item: 0, section: 0), at: .top, animated: false)
-        switchButtonColor(selected: button.tag)
-    }
-    
     private func switchButtonColor(selected: Int) {
         for i in 0...3 {
             if buttonList[i].tag == selected {
@@ -68,9 +74,6 @@ final class SearchResultViewController: UIViewController {
             }
         }
     }
-    deinit {
-        print("SearchResultViewController deinit")
-    }
     
 }
 extension SearchResultViewController: UICollectionViewDataSourcePrefetching {
@@ -82,17 +85,4 @@ extension SearchResultViewController: UICollectionViewDataSourcePrefetching {
     
     
 }
-extension SearchResultViewController: UICollectionViewDelegate, UICollectionViewDataSource {
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return viewModel.outputItem.value.count
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        
-        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: SearchResultCollectionViewCell.id, for: indexPath) as?  SearchResultCollectionViewCell else {return UICollectionViewCell()}
-        let item = viewModel.outputItem.value[indexPath.item]
-        cell.configureData(item: item)
-        return cell
-    }
 
-}

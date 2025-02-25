@@ -4,91 +4,105 @@
 //
 //  Created by 최정안 on 2/6/25.
 //
-
 import Foundation
+import RxSwift
+import RxCocoa
 
 class SearchResultViewModel {
-    
-    var inputLoadDataTrigger: Observable<Void?> = Observable(nil)
-    var inputButtonTapped: Observable<Int?> = Observable(nil)
-    var inputPrefetchingTrigger: Observable<Int?> = Observable(nil)
-
-    var outputSearchedTerm: Observable<String?> = Observable(nil)
-    var outputItem: Observable<[itemDetail]> = Observable([])
-    var outputErrorMessage: Observable<String?> = Observable("")
     var total = 0
-    private var inputSort = "sim"
+    private var inputSort = BehaviorRelay(value: "sim")
     private var page = 1
     private var isEnd = false
     
-    init() {
-        print("SearchResultViewModel init")
+    var query = "dog"
+    let disposeBag = DisposeBag()
+    let shopData = BehaviorSubject(value: Shop(total: 0, items: []))
+
+    struct Input {
+        let tappedButton : Observable<Int>
+        let prefetchItems : ControlEvent<[IndexPath]>
+    }
+    struct Output {
+        let shopData : Observable<Shop>
+        let query: String
+        let selecteButtonIdx : Driver<Int>
+    }
+    func transform(input: Input) -> Output {
+        getLotto()
+        let selectedButtonIdx = PublishRelay<Int>()
+        input.tappedButton.bind(with: self, onNext: { owner, value in
+            selectedButtonIdx.accept(value)
+            owner.changeOrder(selectedTag: value)
+        }).disposed(by: disposeBag)
         
-        inputLoadDataTrigger.lazyBind { _ in
-            self.loadData()
-        }
-        
-        inputButtonTapped.lazyBind { _ in
-            self.changeOrder()
-        }
-        inputPrefetchingTrigger.lazyBind { _ in
-            self.isprefetchItem()
-        }
+        inputSort.bind(with: self) { owner, sortType in
+            owner.getLotto()
+        }.disposed(by: disposeBag)
+
+        input.prefetchItems
+            .bind(with: self) { owner, indexPaths in
+                guard let myData = try? owner.shopData.value() else {return}
+                for idx in indexPaths {
+                    if myData.items.count - 16 <= idx.item && owner.isEnd == false {
+                        owner.page += 1
+                        owner.getLotto()
+                    }
+                }
+            }.disposed(by: disposeBag)
+        return Output(shopData: shopData, query: query, selecteButtonIdx: selectedButtonIdx.asDriver(onErrorJustReturn: 0))
     }
-    
-    deinit {
-        print("SearchResultViewModel deinit")
-    }
-    
-    private func isprefetchItem() {
-        guard let idx = self.inputPrefetchingTrigger.value else {return}
-        if self.outputItem.value.count - 16 <= idx && self.isEnd == false {
-            page += 1
-            loadData()
-        }
-    }
-    
-    private func loadData() {
-        guard let query = outputSearchedTerm.value else {return}
-        NetworkManager.shared.callRequest(query: query, sort: inputSort, page : self.page) { response in
-            switch response {
-            case .success(let value) :
-                if self.page * 100 > value.total {
-                    self.isEnd = true
+
+ 
+    private func getLotto() {
+        let sort = inputSort.value
+        let target = Observable.just(query)
+        target
+            .flatMap{query in
+                NetworkManager.shared.callRequest(query: query, sort: sort, page: 1)
+                    .asObservable()
+                    .catch { error in
+                        print(error)
+                        return Observable.just(Shop(total: 0, items: []))
+                    }
+            }
+            .subscribe(with: self) { owner, value in
+                guard var beforeData = try? owner.shopData.value() else {return}
+                if owner.page * 100 > value.total {
+                    owner.isEnd = true
                     return
                 }
-                if self.page == 1 {
-                    self.total = value.total
-                    self.outputItem.value = value.items
+                if owner.page == 1 {
+                    owner.total = value.total
+                    beforeData.items = value.items
 
                 } else {
-                    self.outputItem.value.append(contentsOf: value.items)
+                    beforeData.items.append(contentsOf: value.items)
                 }
-            case .failure(let failure) :
-                if let errorType = failure as? NetworkError {
-                    self.outputErrorMessage.value = errorType.errorMessage
-                }
-            }
-
-        }
+                owner.shopData.onNext(beforeData)
+            } onError: { _, error in
+                print("onError", error)
+            } onCompleted: { _ in
+                print("onCompleted")
+            } onDisposed: { _ in
+                print("Ondisposed")
+            }.disposed(by: disposeBag)
+        
     }
-    private func changeOrder() {
-        if let tagNum = inputButtonTapped.value {
-            let type = ButtonTag(rawValue: tagNum)
+    private func changeOrder(selectedTag: Int) {
+        
+        let type = ButtonTag(rawValue: selectedTag)
             switch type {
             case .simOrder:
-                inputSort = "sim"
+                inputSort.accept("sim")
             case .dateOrder:
-                inputSort = "date"
+                inputSort.accept("date")
             case .ascOrder:
-                inputSort = "asc"
+                inputSort.accept("asc")
             case .dscOrder:
-                inputSort = "dsc"
+                inputSort.accept("dsc")
             case .none:
                 return
             }
             self.page = 1
-            self.loadData()
-        }
     }
 }
