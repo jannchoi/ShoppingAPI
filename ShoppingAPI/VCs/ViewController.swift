@@ -6,11 +6,15 @@
 //
 
 import UIKit
+import RxSwift
+import RxCocoa
+
 final class ViewController: BaseViewController {
     
     var mainSearchView = SearchView()
     
     private let viewModel = SearchViewModel()
+    let disposeBag = DisposeBag()
     
     
     override func loadView() {
@@ -19,37 +23,28 @@ final class ViewController: BaseViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        print(#function)
         navigationItem.titleView = mainSearchView.titleLabel
-        mainSearchView.searchBar.delegate = self
         mainSearchView.searchBar.becomeFirstResponder()
-        
         bindData()
     }
     
     private func bindData() {
-        viewModel.outputSearchedTerm.lazyBind { [weak self] text in
-            if let text {
-                let vc = SearchResultViewController()
-                vc.viewModel.outputSearchedTerm.value = text
-                print("====")
-                self?.navigationController?.pushViewController(vc, animated: true)
-            } else {
-                self?.showAlert(text: "두 글자 이상을 입력하세요.", button: nil)
-            }
-            self?.mainSearchView.searchBar.text = ""
-        }
-    }
-    deinit {
-        print("ViewController deinit")
+        
+        let input = SearchViewModel.Input(searchedWord: mainSearchView.searchBar.rx.searchButtonClicked.withLatestFrom(mainSearchView.searchBar.rx.text.orEmpty))
+        let output = viewModel.transform(input: input)
+        output.searchButtonTapped.drive(with: self) { owner, value in
+            let vc = SearchResultViewController()
+            vc.viewModel.query = value
+            owner.navigationController?.pushViewController(vc, animated: true)
+        }.disposed(by: disposeBag)
+        output.alertTrigger.drive(with: self) { owner, message in
+            owner.showAlert(text: message, button: nil)
+            owner.mainSearchView.searchBar.text = ""
+        }.disposed(by: disposeBag)
+
     }
 
-}
 
-extension ViewController: UISearchBarDelegate {
-    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        viewModel.inputSearchedTerm.value = searchBar.text
-    }
 }
 
 

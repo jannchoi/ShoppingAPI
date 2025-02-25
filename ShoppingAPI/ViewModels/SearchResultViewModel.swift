@@ -8,7 +8,7 @@ import Foundation
 import RxSwift
 import RxCocoa
 
-class SearchResultViewModel {
+final class SearchResultViewModel {
     var total = 0
     private var inputSort = BehaviorRelay(value: "sim")
     private var page = 1
@@ -17,7 +17,8 @@ class SearchResultViewModel {
     var query = "dog"
     let disposeBag = DisposeBag()
     let shopData = BehaviorSubject(value: Shop(total: 0, items: []))
-
+    
+    let errorMessageTrigger = PublishSubject<String>()
     struct Input {
         let tappedButton : Observable<Int>
         let prefetchItems : ControlEvent<[IndexPath]>
@@ -26,6 +27,7 @@ class SearchResultViewModel {
         let shopData : Observable<Shop>
         let query: String
         let selecteButtonIdx : Driver<Int>
+        let errorMessageTrigger : Observable<String>
     }
     func transform(input: Input) -> Output {
         getLotto()
@@ -49,7 +51,7 @@ class SearchResultViewModel {
                     }
                 }
             }.disposed(by: disposeBag)
-        return Output(shopData: shopData, query: query, selecteButtonIdx: selectedButtonIdx.asDriver(onErrorJustReturn: 0))
+        return Output(shopData: shopData, query: query, selecteButtonIdx: selectedButtonIdx.asDriver(onErrorJustReturn: 0), errorMessageTrigger: errorMessageTrigger)
     }
 
  
@@ -57,11 +59,12 @@ class SearchResultViewModel {
         let sort = inputSort.value
         let target = Observable.just(query)
         target
-            .flatMap{query in
+            .flatMap{ query in
                 NetworkManager.shared.callRequest(query: query, sort: sort, page: 1)
-                    .asObservable()
-                    .catch { error in
-                        print(error)
+                    .catch { [weak self] error in
+                        if let error = error as? NetworkError {
+                            self?.errorMessageTrigger.onNext(error.errorMessage)
+                        }
                         return Observable.just(Shop(total: 0, items: []))
                     }
             }
@@ -72,12 +75,13 @@ class SearchResultViewModel {
                     return
                 }
                 if owner.page == 1 {
-                    owner.total = value.total
+                    beforeData.total = value.total
                     beforeData.items = value.items
 
                 } else {
                     beforeData.items.append(contentsOf: value.items)
                 }
+
                 owner.shopData.onNext(beforeData)
             } onError: { _, error in
                 print("onError", error)

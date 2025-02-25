@@ -8,7 +8,7 @@
 import Foundation
 
 struct Shop: Decodable {
-    let total : Int
+    var total : Int
     var items : [itemDetail]
     
 }

@@ -16,9 +16,9 @@ class NetworkManager {
     static let shared = NetworkManager()
     private init() { }
 
-    func callRequest(query: String, sort: String = "sim", page: Int) -> Single<Shop> {
+    func callRequest(query: String, sort: String = "sim", page: Int) -> Observable<Shop> {
         
-        return Single<Shop>.create { value in
+        return Observable<Shop>.create { value in
             let url = "https://openapi.naver.com/v1/search/shop.json?query=\(query)&display=100&sort=\(sort)&start=\(page)"
             let header: HTTPHeaders = ["X-Naver-Client-Id" : APIKey.naverId, "X-Naver-Client-Secret" : APIKey.naverSecret]
             AF.request(url, method: .get, headers: header)
@@ -26,10 +26,11 @@ class NetworkManager {
                 .responseDecodable(of: Shop.self) { response in
                     switch response.result {
                     case .success(let shop):
-                        value(.success(shop))
+                        value.onNext(shop)
                     case .failure(let error):
                         let code = response.response?.statusCode
-                        value(.failure(self.getErrorMessage(code: code ?? 500)))
+
+                        value.onError(self.getErrorMessage(code: code ?? 500))
                         print(error)
                     }
                 }
