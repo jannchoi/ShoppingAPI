@@ -17,4 +17,5 @@ struct itemDetail: Decodable {
     let image: String
     let lprice : String
     let mallName : String
+    let productId : String
 }

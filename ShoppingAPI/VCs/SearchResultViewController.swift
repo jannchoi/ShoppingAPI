@@ -24,12 +24,13 @@ final class SearchResultViewController: UIViewController {
         bindData()
 
     }
+
     private func bindData() {
         let tappedButton = PublishSubject<Int>()
         let input = SearchResultViewModel.Input(tappedButton: tappedButton, prefetchItems:  mainView.collectionView.rx.prefetchItems)
         let output = viewModel.transform(input: input)
 
-
+        
         for button in buttonList {
             button.rx.tap.map{button.tag}
                 .bind(to: tappedButton).disposed(by: disposeBag)
@@ -51,8 +52,19 @@ final class SearchResultViewController: UIViewController {
         {
             (item, element, cell) in
             cell.configureData(item: element)
+            cell.likeButton.rx.tap.bind{ _ in
+                cell.likeButton.isSelected.toggle()
+                cell.likeButton.toggleDesign()
+            }.disposed(by: cell.disposeBag)
         }.disposed(by: disposeBag)
         
+        mainView.collectionView.rx.modelSelected(itemDetail.self)
+            .bind(with: self, onNext: { owner, item in
+                let vc = DetailViewController()
+                vc.viewModel.selectedItem = item
+                owner.navigationController?.pushViewController(vc, animated: true)
+            }).disposed(by: disposeBag)
+
         output.errorMessageTrigger.bind(with: self) { owner, message in
             owner.showAlert(text: message, button: nil)
         }.disposed(by: disposeBag)

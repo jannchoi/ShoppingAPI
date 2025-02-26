@@ -32,6 +32,7 @@ final class SearchResultViewModel {
     func transform(input: Input) -> Output {
         getLotto()
         let selectedButtonIdx = PublishRelay<Int>()
+        
         input.tappedButton.bind(with: self, onNext: { owner, value in
             selectedButtonIdx.accept(value)
             owner.changeOrder(selectedTag: value)

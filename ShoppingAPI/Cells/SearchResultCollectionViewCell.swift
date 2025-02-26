@@ -6,22 +6,30 @@
 //
 
 import UIKit
+import RxSwift
+import RxCocoa
 import Kingfisher
 import SnapKit
 
 final class SearchResultCollectionViewCell: BaseCollectionViewCell {
     static let id = "SearchResultCollectionViewCell"
+    var disposeBag = DisposeBag()
     
     let itemImage = UIImageView()
     let malName = UILabel()
     let itemName = UILabel()
     let lowPrice = UILabel()
+    var likeButton = LikeButton(id: "")
     
     override init(frame: CGRect) {
         super.init(frame: frame)
         configureView()
     }
+    override func prepareForReuse() {
+        disposeBag = DisposeBag()
+    }
     func configureData(item: itemDetail) {
+        likeButton.id = item.productId
         let url = URL(string: item.image)
         itemImage.kf.setImage(with: url)
         
@@ -36,6 +44,7 @@ final class SearchResultCollectionViewCell: BaseCollectionViewCell {
     }
     override func configureHierachy() {
         contentView.addSubview(itemImage)
+        contentView.addSubview(likeButton)
         contentView.addSubview(malName)
         contentView.addSubview(itemName)
         contentView.addSubview(lowPrice)
@@ -45,6 +54,9 @@ final class SearchResultCollectionViewCell: BaseCollectionViewCell {
             make.top.horizontalEdges.equalToSuperview()
             make.height.equalTo(self.snp.width)
             make.centerX.equalToSuperview()
+        }
+        likeButton.snp.makeConstraints { make in
+            make.bottom.trailing.equalTo(itemImage).inset(4)
         }
         malName.snp.makeConstraints { make in
             make.leading.equalTo(itemImage).offset(8)
