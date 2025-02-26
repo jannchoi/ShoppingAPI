@@ -91,6 +91,8 @@ class ShopView: BaseView {
         collectionView.backgroundColor = .black
         titleLabel.textColor = .white
         collectionView.register(SearchResultCollectionViewCell.self, forCellWithReuseIdentifier: "SearchResultCollectionViewCell")
+        
+        
     }
 }
 

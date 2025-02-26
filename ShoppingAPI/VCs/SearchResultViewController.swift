@@ -23,13 +23,17 @@ final class SearchResultViewController: UIViewController {
         super.viewDidLoad()
         bindData()
 
+
+    }
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
     }
 
     private func bindData() {
         let tappedButton = PublishSubject<Int>()
         let input = SearchResultViewModel.Input(tappedButton: tappedButton, prefetchItems:  mainView.collectionView.rx.prefetchItems)
         let output = viewModel.transform(input: input)
-
         
         for button in buttonList {
             button.rx.tap.map{button.tag}

@@ -23,9 +23,11 @@ final class ViewController: BaseViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         navigationItem.titleView = mainSearchView.titleLabel
         mainSearchView.searchBar.becomeFirstResponder()
         bindData()
+        wishList()
     }
     
     private func bindData() {
@@ -41,7 +43,16 @@ final class ViewController: BaseViewController {
             owner.showAlert(text: message, button: nil)
             owner.mainSearchView.searchBar.text = ""
         }.disposed(by: disposeBag)
+        
+        
 
+    }
+    private func wishList() {
+        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: mainSearchView.wishListButton)
+        mainSearchView.wishListButton.rx.tap
+            .bind(with: self) { owner, _ in
+                owner.navigationController?.pushViewController(WishListViewController(), animated: true)
+            }.disposed(by: disposeBag)
     }
 
 
