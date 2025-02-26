@@ -20,16 +20,18 @@ final class SearchResultCollectionViewCell: BaseCollectionViewCell {
     let itemName = UILabel()
     let lowPrice = UILabel()
     var likeButton = LikeButton(id: "")
-    
+
     override init(frame: CGRect) {
-        super.init(frame: frame)
-        configureView()
-    }
-    override func prepareForReuse() {
-        disposeBag = DisposeBag()
-    }
+           super.init(frame: frame)
+           configureView()
+       }
+       override func prepareForReuse() {
+           disposeBag = DisposeBag()
+       }
     func configureData(item: itemDetail) {
         likeButton.id = item.productId
+        likeButton.prepareDesign()
+
         let url = URL(string: item.image)
         itemImage.kf.setImage(with: url)
         

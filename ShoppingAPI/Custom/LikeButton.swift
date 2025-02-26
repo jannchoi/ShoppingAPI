@@ -19,7 +19,6 @@ final class LikeButton: UIButton {
     init(id: String) {
         self.id = id
         super.init(frame: .zero)
-        setImage(UIImage(systemName: "heart"), for: .normal)
         tintColor = .red
         self.prepareDesign()
     }
@@ -41,7 +40,7 @@ final class LikeButton: UIButton {
             setImage((UIImage(systemName: "heart")), for: .normal)
         }
     }
-    private func prepareDesign() {
+    func prepareDesign() {
         guard let id else {return}
         if UserDefaultsManager.like.contains(id) {
             isSelected = true

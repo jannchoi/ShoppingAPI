@@ -34,11 +34,13 @@ final class ViewController: BaseViewController {
         
         let input = SearchViewModel.Input(searchedWord: mainSearchView.searchBar.rx.searchButtonClicked.withLatestFrom(mainSearchView.searchBar.rx.text.orEmpty))
         let output = viewModel.transform(input: input)
+        
         output.searchButtonTapped.drive(with: self) { owner, value in
             let vc = SearchResultViewController()
             vc.viewModel.query = value
             owner.navigationController?.pushViewController(vc, animated: true)
         }.disposed(by: disposeBag)
+        
         output.alertTrigger.drive(with: self) { owner, message in
             owner.showAlert(text: message, button: nil)
             owner.mainSearchView.searchBar.text = ""

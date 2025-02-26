@@ -14,12 +14,12 @@ final class DetailViewModel {
     var selectedItem = itemDetail(title: "", image: "", lprice: "", mallName: "", productId: "")
     
     struct Input {
-        
+        let likeButtonTapped: ControlEvent<Void>
     }
     struct Output {
-        
+        let likeButtonTapped: SharedSequence<DriverSharingStrategy, Void>
     }
-    func trnasform() {
-
+    func trnasform(input: Input) -> Output {
+        return Output(likeButtonTapped: input.likeButtonTapped.asDriver())
     }
 }

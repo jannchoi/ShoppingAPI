@@ -19,22 +19,23 @@ final class SearchResultViewController: UIViewController {
         view = mainView
     }
     lazy var buttonList = [mainView.simOrder, mainView.dateOrder, mainView.ascOrder, mainView.dscOrder]
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         bindData()
-
-
     }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        mainView.collectionView.reloadData()
         
     }
-
     private func bindData() {
         let tappedButton = PublishSubject<Int>()
-        let input = SearchResultViewModel.Input(tappedButton: tappedButton, prefetchItems:  mainView.collectionView.rx.prefetchItems)
+        let likeButtonTapped = PublishSubject<LikeButton>()
+        let input = SearchResultViewModel.Input(tappedButton: tappedButton, prefetchItems:  mainView.collectionView.rx.prefetchItems, itemSelected: mainView.collectionView.rx.modelSelected(itemDetail.self),likeButtonTapped: likeButtonTapped)
         let output = viewModel.transform(input: input)
-        
+
+
         for button in buttonList {
             button.rx.tap.map{button.tag}
                 .bind(to: tappedButton).disposed(by: disposeBag)
@@ -44,11 +45,13 @@ final class SearchResultViewController: UIViewController {
             owner.switchButtonColor(selected: value)
         }.disposed(by: disposeBag)
 
+        
         output.shopData.map{String($0.total)}.asDriver(onErrorJustReturn: "0")
             .drive(with: self) {
                 owner, value in
                 owner.mainView.totalCount.text = value + "개의 검색 결과"
             }.disposed(by: disposeBag)
+        
         
         output.shopData
             .map{$0.items}
@@ -56,20 +59,17 @@ final class SearchResultViewController: UIViewController {
         {
             (item, element, cell) in
             cell.configureData(item: element)
-            cell.likeButton.rx.tap.bind{ _ in
-                cell.likeButton.isSelected.toggle()
-                cell.likeButton.toggleDesign()
-            }.disposed(by: cell.disposeBag)
+            cell.likeButton.rx.tap.map{cell.likeButton}
+                .bind(to: likeButtonTapped).disposed(by: cell.disposeBag)
         }.disposed(by: disposeBag)
         
-        mainView.collectionView.rx.modelSelected(itemDetail.self)
-            .bind(with: self, onNext: { owner, item in
+        output.itemselected.drive(with: self, onNext: { owner, item in
                 let vc = DetailViewController()
                 vc.viewModel.selectedItem = item
                 owner.navigationController?.pushViewController(vc, animated: true)
             }).disposed(by: disposeBag)
 
-        output.errorMessageTrigger.bind(with: self) { owner, message in
+        output.errorMessageTrigger.drive(with: self) { owner, message in
             owner.showAlert(text: message, button: nil)
         }.disposed(by: disposeBag)
 

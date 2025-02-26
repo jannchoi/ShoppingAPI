@@ -14,13 +14,11 @@ struct WishItem: Hashable, Identifiable {
     let id = UUID()
     let itemName : String
     let date : String
-    
 }
 
 class WishListViewController: UIViewController {
     enum Section: CaseIterable{
         case main
-
     }
     let searchBar = UISearchBar()
     lazy var collectionView = UICollectionView(frame: .zero, collectionViewLayout: createLayout())
@@ -48,7 +46,7 @@ class WishListViewController: UIViewController {
         
         searchBar.delegate = self
         collectionView.delegate = self
-        navigationItem.title = "곧 살 것 임🤑"
+        navigationItem.title = "곧 살 것 임"
         
     }
     private func updateSnapShot() {
@@ -58,7 +56,7 @@ class WishListViewController: UIViewController {
         dataSource.apply(snapshot)
         
     }
-    func createLayout() -> UICollectionViewLayout {
+    private func createLayout() -> UICollectionViewLayout {
         var configuration = UICollectionLayoutListConfiguration(appearance: .plain)
         configuration.backgroundColor = .systemPink.withAlphaComponent(0.4)
         
@@ -68,28 +66,28 @@ class WishListViewController: UIViewController {
     private func configureDataSource() {
         let registeration: UICollectionView.CellRegistration<UICollectionViewListCell, WishItem> = UICollectionView.CellRegistration {
             cell, indexPath, itemIdentifier in
-            var content = UIListContentConfiguration.valueCell()
-            content.text = itemIdentifier.itemName
-            content.textProperties.font = .boldSystemFont(ofSize: 14)
-            let url = URL(string: "https://shopping-phinf.pstatic.net/main_8841949/88419499766.jpg")!
+
+            var backgroundConfig = UIBackgroundConfiguration.listCell()
+            backgroundConfig.backgroundColor = .systemPink.withAlphaComponent(0.3)
+            cell.backgroundConfiguration = backgroundConfig
+
+            let url = URL(string: "https://picsum.photos/200")!
             DispatchQueue.global(qos: .background).async {
                 do {
                     let data = try Data(contentsOf: url)
                     DispatchQueue.main.async {
+                        var content = UIListContentConfiguration.valueCell()
+                        content.text = itemIdentifier.itemName
+                        content.textProperties.font = .boldSystemFont(ofSize: 14)
+                        content.secondaryText = itemIdentifier.date
                         content.image = UIImage(data: data)
-                        
+                        content.imageProperties.maximumSize = CGSize(width: 40, height: 40)
+                        cell.contentConfiguration = content
                     }
                 } catch {
                     print(error)
                 }
-
             }
-            content.secondaryText = itemIdentifier.date
-            cell.contentConfiguration = content
-            
-            var backgroundConfig = UIBackgroundConfiguration.listCell()
-            backgroundConfig.backgroundColor = .systemPink.withAlphaComponent(0.3)
-            cell.backgroundConfiguration = backgroundConfig
         }
         dataSource = UICollectionViewDiffableDataSource(collectionView: collectionView, cellProvider: { collectionView, indexPath, itemIdentifier in
             let cell = collectionView.dequeueConfiguredReusableCell(using: registeration, for: indexPath, item: itemIdentifier)

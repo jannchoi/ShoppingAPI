@@ -17,29 +17,37 @@ final class SearchResultViewModel {
     var query = "dog"
     let disposeBag = DisposeBag()
     let shopData = BehaviorSubject(value: Shop(total: 0, items: []))
-    
     let errorMessageTrigger = PublishSubject<String>()
+    
     struct Input {
         let tappedButton : Observable<Int>
         let prefetchItems : ControlEvent<[IndexPath]>
+        let itemSelected : ControlEvent<itemDetail>
+        let likeButtonTapped : Observable<LikeButton>
     }
     struct Output {
         let shopData : Observable<Shop>
+        
         let query: String
         let selecteButtonIdx : Driver<Int>
-        let errorMessageTrigger : Observable<String>
+        let errorMessageTrigger : Driver<String>
+        let itemselected : SharedSequence<DriverSharingStrategy, itemDetail>
     }
     func transform(input: Input) -> Output {
-        getLotto()
+        getItemList()
         let selectedButtonIdx = PublishRelay<Int>()
-        
+        input.likeButtonTapped.asDriver(onErrorJustReturn: LikeButton(id: "")).drive{ likebutton in
+            likebutton.isSelected.toggle()
+            likebutton.toggleDesign()
+        }.disposed(by: disposeBag)
+
         input.tappedButton.bind(with: self, onNext: { owner, value in
             selectedButtonIdx.accept(value)
             owner.changeOrder(selectedTag: value)
         }).disposed(by: disposeBag)
         
         inputSort.bind(with: self) { owner, sortType in
-            owner.getLotto()
+            owner.getItemList()
         }.disposed(by: disposeBag)
 
         input.prefetchItems
@@ -48,15 +56,17 @@ final class SearchResultViewModel {
                 for idx in indexPaths {
                     if myData.items.count - 16 <= idx.item && owner.isEnd == false {
                         owner.page += 1
-                        owner.getLotto()
+                        owner.getItemList()
                     }
                 }
             }.disposed(by: disposeBag)
-        return Output(shopData: shopData, query: query, selecteButtonIdx: selectedButtonIdx.asDriver(onErrorJustReturn: 0), errorMessageTrigger: errorMessageTrigger)
+
+        
+        return Output(shopData: shopData, query: query, selecteButtonIdx: selectedButtonIdx.asDriver(onErrorJustReturn: 0), errorMessageTrigger: errorMessageTrigger.asDriver(onErrorJustReturn: "unKnown Error"), itemselected: input.itemSelected.asDriver())
     }
 
  
-    private func getLotto() {
+    private func getItemList() {
         let sort = inputSort.value
         let target = Observable.just(query)
         target

@@ -27,10 +27,11 @@ final class DetailViewController: UIViewController {
         bind()
     }
     private func bind() {
-        likeButton.rx.tap
-            .bind(with: self) { owner, _ in
+        let input = DetailViewModel.Input(likeButtonTapped: likeButton.rx.tap)
+        let output = viewModel.trnasform(input: input)
+        output.likeButtonTapped.drive(with: self) { owner, _ in
                 owner.likeButton.isSelected.toggle()
-                owner.likeButton.toggleDesign()
+            owner.likeButton.toggleDesign()
             }.disposed(by: disposeBag)
     }
     private func configure() {
