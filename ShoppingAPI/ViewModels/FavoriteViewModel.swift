@@ -18,19 +18,40 @@ final class FavoriteViewModel {
     let errorMessageTrigger = PublishSubject<String>()
     
     struct Input {
-        let likeButtonTapped : Observable<LikeButton>
+        let likeButtonTapped : Observable<(LikeButton, String)>
+        let recentText: ControlProperty<String>
+        let keyboardDismiss: ControlEvent<Void>
     }
     struct Output {
         let favoriteData : Observable<[Product]>
+        let toastTrigger : Driver<(Bool, String)>
+        let keyboardDismiss: Driver<Void>
     }
     func transform(input: Input) -> Output {
+        let itemData = favoriteItem
+        let toastTrigger = PublishSubject<(Bool, String)>()
         input.likeButtonTapped.bind(with: self, onNext: { owner, value in
-            value.isSelected.toggle()
-            value.toggleDesign()
-
+            value.0.isSelected.toggle()
+            value.0.toggleDesign()
+            toastTrigger.onNext((value.0.isSelected, value.1.replaceText()))
+            itemData.onNext(owner.realm.objects(Product.self))
         }).disposed(by: disposeBag)
         
-        return Output(favoriteData: favoriteItem.map{Array($0)})
+        
+        
+        input.recentText.bind(with: self) { owner, text in
+            if text.isEmpty {
+                itemData.onNext(owner.list)
+            } else {
+                let query1 = NSPredicate(format: "title CONTAINS[c] %@", text)
+                let query2 = NSPredicate(format: "mallName CONTAINS[c] %@", text)
+                let query = NSCompoundPredicate(type: .or, subpredicates: [query1, query2])
+                let filteredList = owner.list.filter(query)
+                itemData.onNext(filteredList)
+            }
+        }.disposed(by: disposeBag)
+        
+        return Output(favoriteData: itemData.map{Array($0)},toastTrigger: toastTrigger.asDriver(onErrorJustReturn: (false, "")), keyboardDismiss: input.keyboardDismiss.asDriver())
     }
     
 }

@@ -63,7 +63,6 @@ final class LikeButton: UIButton {
     if realm.objects(Product.self).contains(where: { $0.productId == item.productId
         })
         {
-
             isSelected = true
         }
         else {

@@ -38,14 +38,14 @@ final class FavoriteCollectionViewCell: BaseCollectionViewCell {
         itemImage.kf.setImage(with: url)
         
         malName.text = item.mallName
-        itemName.text = replaceText(text: item.title)
+        itemName.text = item.title.replaceText()
         lowPrice.text = NumberFormatter.formatter.StringIntFormat(value: item.lprice)
     }
-    func replaceText(text: String) -> String {
-        var result = text.replacingOccurrences(of: "<b>", with: "")
-        result = result.replacingOccurrences(of: "</b>", with: "")
-        return result
-    }
+//    func replaceText(text: String) -> String {
+//        var result = text.replacingOccurrences(of: "<b>", with: "")
+//        result = result.replacingOccurrences(of: "</b>", with: "")
+//        return result
+//    }
     override func configureHierachy() {
         contentView.addSubview(itemImage)
         contentView.addSubview(likeButton)

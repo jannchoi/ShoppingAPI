@@ -19,6 +19,7 @@ class SearchView: BaseView {
     let centerLabel = UILabel()
     let wishListButton = UIButton()
     let favoriteButton = UIButton()
+    
 
     
     override func configureHierachy() {

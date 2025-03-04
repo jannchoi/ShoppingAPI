@@ -8,6 +8,7 @@
 import UIKit
 import RxSwift
 import RxCocoa
+import Toast
 
 final class SearchResultViewController: UIViewController {
     
@@ -27,6 +28,7 @@ final class SearchResultViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         mainView.collectionView.reloadData()
+
     
     }
     private func bindData() {
@@ -61,6 +63,11 @@ final class SearchResultViewController: UIViewController {
             cell.configureData(item: element)
             cell.likeButton.rx.tap.map{cell.likeButton}
                 .bind(to: likeButtonTapped).disposed(by: cell.disposeBag)
+        }.disposed(by: disposeBag)
+        
+        output.toastTrigger.drive(with: self) { owner, value in
+            owner.mainView.toastView.setMessage(status: value.0, title: value.1)
+            owner.mainView.showToast(owner.mainView.toastView, duration: 2.0, position: .top)
         }.disposed(by: disposeBag)
         
         output.itemselected.drive(with: self, onNext: { owner, item in

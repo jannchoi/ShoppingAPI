@@ -9,7 +9,7 @@ import UIKit
 
 class ShopView: BaseView {
     lazy var  collectionView = UICollectionView(frame: .zero, collectionViewLayout: createCollectionViewLayout())
-    
+    let toastView = ToastView()
     let titleLabel = UILabel()
     let totalCount = UILabel()
     lazy var simOrder = orderButtonStyle(title: "정확도", tagInt: 0)

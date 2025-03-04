@@ -10,7 +10,6 @@ import RxCocoa
 import RealmSwift
 
 final class SearchResultViewModel {
-    let realm = try! Realm()
     
     var total = 0
     private var inputSort = BehaviorRelay(value: "sim")
@@ -35,14 +34,16 @@ final class SearchResultViewModel {
         let selecteButtonIdx : Driver<Int>
         let errorMessageTrigger : Driver<String>
         let itemselected : SharedSequence<DriverSharingStrategy, itemDetail>
+        let toastTrigger : Driver<(Bool, String)>
     }
     func transform(input: Input) -> Output {
         getItemList()
         let selectedButtonIdx = PublishRelay<Int>()
+        let toastTrigger = PublishSubject<(Bool, String)>()
         input.likeButtonTapped.bind(with: self, onNext: { owner, value in
-            print(owner.realm.configuration.fileURL)
             value.isSelected.toggle()
             value.toggleDesign()
+            toastTrigger.onNext((value.isSelected, value.item?.title.replaceText() ?? ""))
         }).disposed(by: disposeBag)
         
         
@@ -67,7 +68,7 @@ final class SearchResultViewModel {
             }.disposed(by: disposeBag)
 
         
-        return Output(shopData: shopData, query: query, selecteButtonIdx: selectedButtonIdx.asDriver(onErrorJustReturn: 0), errorMessageTrigger: errorMessageTrigger.asDriver(onErrorJustReturn: "unKnown Error"), itemselected: input.itemSelected.asDriver())
+        return Output(shopData: shopData, query: query, selecteButtonIdx: selectedButtonIdx.asDriver(onErrorJustReturn: 0), errorMessageTrigger: errorMessageTrigger.asDriver(onErrorJustReturn: "unKnown Error"), itemselected: input.itemSelected.asDriver(), toastTrigger: toastTrigger.asDriver(onErrorJustReturn: (false, "")))
     }
 
  
