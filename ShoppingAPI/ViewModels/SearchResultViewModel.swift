@@ -7,8 +7,11 @@
 import Foundation
 import RxSwift
 import RxCocoa
+import RealmSwift
 
 final class SearchResultViewModel {
+    let realm = try! Realm()
+    
     var total = 0
     private var inputSort = BehaviorRelay(value: "sim")
     private var page = 1
@@ -36,11 +39,13 @@ final class SearchResultViewModel {
     func transform(input: Input) -> Output {
         getItemList()
         let selectedButtonIdx = PublishRelay<Int>()
-        input.likeButtonTapped.asDriver(onErrorJustReturn: LikeButton(id: "")).drive{ likebutton in
-            likebutton.isSelected.toggle()
-            likebutton.toggleDesign()
-        }.disposed(by: disposeBag)
-
+        input.likeButtonTapped.bind(with: self, onNext: { owner, value in
+            print(owner.realm.configuration.fileURL)
+            value.isSelected.toggle()
+            value.toggleDesign()
+        }).disposed(by: disposeBag)
+        
+        
         input.tappedButton.bind(with: self, onNext: { owner, value in
             selectedButtonIdx.accept(value)
             owner.changeOrder(selectedTag: value)

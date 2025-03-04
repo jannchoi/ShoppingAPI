@@ -27,7 +27,7 @@ final class ViewController: BaseViewController {
         navigationItem.titleView = mainSearchView.titleLabel
         mainSearchView.searchBar.becomeFirstResponder()
         bindData()
-        wishList()
+        barButtonItem()
     }
     
     private func bindData() {
@@ -49,12 +49,19 @@ final class ViewController: BaseViewController {
         
 
     }
-    private func wishList() {
-        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: mainSearchView.wishListButton)
+    private func barButtonItem() {
         mainSearchView.wishListButton.rx.tap
             .bind(with: self) { owner, _ in
                 owner.navigationController?.pushViewController(WishListViewController(), animated: true)
             }.disposed(by: disposeBag)
+        mainSearchView.favoriteButton.rx.tap
+            .bind(with: self) { owner, _ in
+                owner.navigationController?.pushViewController(FavoriteViewController(), animated: true)
+            }.disposed(by: disposeBag)
+        
+        navigationItem.rightBarButtonItems = [UIBarButtonItem(customView: mainSearchView.wishListButton), UIBarButtonItem(customView: mainSearchView.favoriteButton)]
+        
+        
     }
 
 

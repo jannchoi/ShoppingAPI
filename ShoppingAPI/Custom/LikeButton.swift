@@ -8,16 +8,17 @@
 import UIKit
 import RxSwift
 import RxCocoa
+import RealmSwift
 
 final class LikeButton: UIButton {
-    
+    let realm = try! Realm()
     override init(frame: CGRect) {
         super.init(frame: frame)
     }
-    var id: String?
-
-    init(id: String) {
-        self.id = id
+    var item: Product?
+    
+    init(item: Product) {
+        self.item = item
         super.init(frame: .zero)
         tintColor = .red
         self.prepareDesign()
@@ -27,22 +28,42 @@ final class LikeButton: UIButton {
         fatalError("init(coder:) has not been implemented")
     }
     func toggleDesign() {
-        guard let id else {return}
+        guard let item else {return}
+        let isSaved = realm.objects(Product.self).contains(where: { $0.productId == item.productId
+        })
         if isSelected {
-            if !UserDefaultsManager.like.contains(id) {
-                UserDefaultsManager.like.append(id)
+            if !isSaved {
+                do {
+                    try realm.write {
+                        let data = Product(productId: item.productId, title: item.title, image: item.image, lprice: item.lprice, mallName: item.mallName)
+                        realm.add(data)
+                    }
+                } catch {
+                    print("realm 저장 실패")
+                }
             }
             setImage(UIImage(systemName: "heart.fill"), for: .normal)
         } else {
-            if let idx = UserDefaultsManager.like.firstIndex(of: id) {
-                UserDefaultsManager.like.remove(at: idx)
+            if isSaved {
+                do {
+                    try realm.write {
+                        let target = realm.objects(Product.self).where { $0.productId == item.productId
+                        }
+                        realm.delete(target)
+                    }
+                } catch {
+                    print("realm 데이터 삭제 실패")
+                }
             }
             setImage((UIImage(systemName: "heart")), for: .normal)
         }
     }
     func prepareDesign() {
-        guard let id else {return}
-        if UserDefaultsManager.like.contains(id) {
+        guard let item else {return}
+    if realm.objects(Product.self).contains(where: { $0.productId == item.productId
+        })
+        {
+
             isSelected = true
         }
         else {

@@ -27,7 +27,7 @@ final class SearchResultViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         mainView.collectionView.reloadData()
-        
+    
     }
     private func bindData() {
         let tappedButton = PublishSubject<Int>()

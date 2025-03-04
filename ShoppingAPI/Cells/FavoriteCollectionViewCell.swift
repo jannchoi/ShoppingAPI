@@ -1,9 +1,11 @@
 //
-//  SearchResultCollectionViewCell.swift
+//  FavoriteCollectionViewCell.swift
 //  ShoppingAPI
 //
-//  Created by 최정안 on 1/15/25.
+//  Created by 최정안 on 3/4/25.
 //
+
+import UIKit
 
 import UIKit
 import RxSwift
@@ -11,8 +13,8 @@ import RxCocoa
 import Kingfisher
 import SnapKit
 
-final class SearchResultCollectionViewCell: BaseCollectionViewCell {
-    static let id = "SearchResultCollectionViewCell"
+final class FavoriteCollectionViewCell: BaseCollectionViewCell {
+    static let id = "FavoriteCollectionViewCell"
     var disposeBag = DisposeBag()
     
     let itemImage = UIImageView()
@@ -28,12 +30,9 @@ final class SearchResultCollectionViewCell: BaseCollectionViewCell {
        override func prepareForReuse() {
            disposeBag = DisposeBag()
        }
-    func configureData(item: itemDetail) {
-
-        let product = Product(productId: item.productId, title: item.title, image: item.image, lprice: item.lprice, mallName: item.mallName)
-        likeButton.item = product
+    func configureData(item: Product) {
+        likeButton.item = item
         likeButton.prepareDesign()
-        print("33333", likeButton.isSelected)
 
         let url = URL(string: item.image)
         itemImage.kf.setImage(with: url)
@@ -93,3 +92,4 @@ final class SearchResultCollectionViewCell: BaseCollectionViewCell {
         lowPrice.textColor = .white
     }
 }
+

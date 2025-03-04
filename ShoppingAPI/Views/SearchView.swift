@@ -18,6 +18,7 @@ class SearchView: BaseView {
     }()
     let centerLabel = UILabel()
     let wishListButton = UIButton()
+    let favoriteButton = UIButton()
 
     
     override func configureHierachy() {
@@ -55,6 +56,7 @@ class SearchView: BaseView {
         labelDesign(label: centerLabel, title: "쇼핑하러Go", color: .white)
         centerLabel.font = .boldSystemFont(ofSize: 18)
         wishListButton.setTitle("Wish", for: .normal)
+        favoriteButton.setTitle("Like", for: .normal)
     }
     
     func labelDesign(label: UILabel, title: String, color: UIColor) {

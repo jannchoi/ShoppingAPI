@@ -18,26 +18,18 @@ final class DetailViewController: UIViewController {
     let itemImage = UIImageView()
     let disposeBag = DisposeBag()
     let viewModel = DetailViewModel()
-    lazy var likeButton = LikeButton(id: viewModel.selectedItem.productId)
     
     override func viewDidLoad() {
         super.viewDidLoad()
         configure()
-        
-        bind()
+
     }
     private func bind() {
-        let input = DetailViewModel.Input(likeButtonTapped: likeButton.rx.tap)
-        let output = viewModel.trnasform(input: input)
-        output.likeButtonTapped.drive(with: self) { owner, _ in
-                owner.likeButton.isSelected.toggle()
-            owner.likeButton.toggleDesign()
-            }.disposed(by: disposeBag)
+
     }
     private func configure() {
         view.backgroundColor = .black
         view.addSubview(itemImage)
-        view.addSubview(likeButton)
         view.addSubview(mallName)
         view.addSubview(itemName)
         view.addSubview(itemPrice)
@@ -45,9 +37,7 @@ final class DetailViewController: UIViewController {
             make.top.centerX.equalTo(view.safeAreaLayoutGuide)
             make.size.equalTo(330)
         }
-        likeButton.snp.makeConstraints { make in
-            make.bottom.trailing.equalTo(itemImage).inset(4)
-        }
+
         mallName.snp.makeConstraints { make in
             make.top.equalTo(itemImage.snp.bottom).offset(20)
             make.horizontalEdges.equalTo(itemImage.snp.horizontalEdges)
