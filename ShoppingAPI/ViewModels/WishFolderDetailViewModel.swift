@@ -10,7 +10,7 @@ import RxSwift
 import RxCocoa
 import RealmSwift
 
-class WishFolderDetailViewModel {
+final class WishFolderDetailViewModel {
     private(set) var internalData : InternalData
     let disposeBag = DisposeBag()
     let itemRepository = WishItemsRepository()
@@ -33,7 +33,6 @@ class WishFolderDetailViewModel {
     }
     
     func transform(input: Input) -> Output{
-        //repository.getFileURL()
         let itemList = BehaviorSubject(value: itemList)
         input.recentText
             .map{$0.trimmingCharacters(in: .whitespacesAndNewlines)}

@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		CE0D4D072D6DED8E00CC3B19 /* RxCocoa in Frameworks */ = {isa = PBXBuildFile; productRef = CE0D4D062D6DED8E00CC3B19 /* RxCocoa */; };
 		CE0D4D092D6DED8E00CC3B19 /* RxSwift in Frameworks */ = {isa = PBXBuildFile; productRef = CE0D4D082D6DED8E00CC3B19 /* RxSwift */; };
+		CE251E322D79191600725E95 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE251E312D79191600725E95 /* WebKit.framework */; };
 		CE9BBEA02D76DBF800B17E9D /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = CE9BBE9F2D76DBF800B17E9D /* RealmSwift */; };
 		CE9BBEA12D76DC0900B17E9D /* RealmSwift in Embed Frameworks */ = {isa = PBXBuildFile; productRef = CE9BBE9F2D76DBF800B17E9D /* RealmSwift */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CE9BBF002D771C0700B17E9D /* Toast in Frameworks */ = {isa = PBXBuildFile; productRef = CE9BBEFF2D771C0700B17E9D /* Toast */; };
@@ -33,6 +34,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		CE251E312D79191600725E95 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
 		CEC4C2782D378F7D0067CEA8 /* ShoppingAPI.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ShoppingAPI.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CEC4C3632D3798BF0067CEA8 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -63,6 +65,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CE251E322D79191600725E95 /* WebKit.framework in Frameworks */,
 				CE9BBEA02D76DBF800B17E9D /* RealmSwift in Frameworks */,
 				CEC4C2BF2D3790960067CEA8 /* SnapKit in Frameworks */,
 				CEC4C2B92D3790820067CEA8 /* Kingfisher in Frameworks */,
@@ -76,11 +79,20 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		CE251E302D79191600725E95 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				CE251E312D79191600725E95 /* WebKit.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		CEC4C26F2D378F7D0067CEA8 = {
 			isa = PBXGroup;
 			children = (
 				CEC4C3632D3798BF0067CEA8 /* .gitignore */,
 				CEC4C27A2D378F7D0067CEA8 /* ShoppingAPI */,
+				CE251E302D79191600725E95 /* Frameworks */,
 				CEC4C2792D378F7D0067CEA8 /* Products */,
 			);
 			sourceTree = "<group>";

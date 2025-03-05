@@ -9,7 +9,7 @@ import UIKit
 import SnapKit
 import RxSwift
 
-class WishTableViewCell: UITableViewCell {
+final class WishTableViewCell: UITableViewCell {
     static let id = "WishTableViewCell"
     let titleLabel = UILabel()
     let subTitleLabel = UILabel()

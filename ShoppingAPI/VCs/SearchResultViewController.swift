@@ -72,7 +72,7 @@ final class SearchResultViewController: UIViewController {
         
         output.itemselected.drive(with: self, onNext: { owner, item in
                 let vc = DetailViewController()
-                vc.viewModel.selectedItem = item
+            vc.myURL = item.link
                 owner.navigationController?.pushViewController(vc, animated: true)
             }).disposed(by: disposeBag)
 

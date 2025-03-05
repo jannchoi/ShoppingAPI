@@ -55,7 +55,6 @@ final class WishItemsRepository:WishItemRepository {
                     $0.id == folderId
                 }.first!
                 folder.detail.append(WishItem(itemName: itemName))
-                print("wishItem 저장 완료")
             }
         } catch {
             print("wishItem 저장 실패")

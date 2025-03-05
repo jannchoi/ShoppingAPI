@@ -31,7 +31,7 @@ final class WishFolderDetailViewController: UIViewController {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    func bind() {
+    private func bind() {
         let input = WishFolderDetailViewModel.Input(recentText: searchBar.rx.searchButtonClicked.withLatestFrom(searchBar.rx.text.orEmpty))
         let output = viewModel.transform(input: input)
         
@@ -39,12 +39,10 @@ final class WishFolderDetailViewController: UIViewController {
             (row, element, cell) in
             cell.configureData(item: element)
         }.disposed(by: disposeBag)
-        
-        
-        
+
         
     }
-    func configuration() {
+    private func configuration() {
         view.backgroundColor = .white
         view.addSubview(searchBar)
         view.addSubview(tableView)

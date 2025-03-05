@@ -27,7 +27,7 @@ final class WishFolderViewController: UIViewController {
         super.viewWillAppear(animated)
         tableView.reloadData()
     }
-    func bind() {
+    private func bind() {
         let input = WishFolderViewModel.Input()
         let output = viewModel.transform(input: input)
         
@@ -42,7 +42,7 @@ final class WishFolderViewController: UIViewController {
         }.disposed(by: disposeBag)
         
     }
-    func configuration() {
+    private func configuration() {
         view.backgroundColor = .white
         view.addSubview(tableView)
         tableView.snp.makeConstraints { make in
