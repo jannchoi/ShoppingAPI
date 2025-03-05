@@ -6,8 +6,6 @@
 //
 
 import UIKit
-
-import UIKit
 import RxSwift
 import RxCocoa
 import Kingfisher
@@ -21,7 +19,7 @@ final class FavoriteCollectionViewCell: BaseCollectionViewCell {
     let malName = UILabel()
     let itemName = UILabel()
     let lowPrice = UILabel()
-    var likeButton = LikeButton(item: Product(productId: "", title: "", image: "", lprice: "", mallName: ""))
+    let likeButton = LikeButton(item: nil)
 
     override init(frame: CGRect) {
            super.init(frame: frame)
@@ -41,11 +39,7 @@ final class FavoriteCollectionViewCell: BaseCollectionViewCell {
         itemName.text = item.title.replaceText()
         lowPrice.text = NumberFormatter.formatter.StringIntFormat(value: item.lprice)
     }
-//    func replaceText(text: String) -> String {
-//        var result = text.replacingOccurrences(of: "<b>", with: "")
-//        result = result.replacingOccurrences(of: "</b>", with: "")
-//        return result
-//    }
+
     override func configureHierachy() {
         contentView.addSubview(itemImage)
         contentView.addSubview(likeButton)

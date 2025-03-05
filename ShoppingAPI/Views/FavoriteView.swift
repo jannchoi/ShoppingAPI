@@ -7,7 +7,7 @@
 
 import UIKit
 
-class FavoriteView: BaseView {
+final class FavoriteView: BaseView {
     lazy var  collectionView = UICollectionView(frame: .zero, collectionViewLayout: createCollectionViewLayout())
     let toastView = ToastView()
     let searchBar = UISearchBar()

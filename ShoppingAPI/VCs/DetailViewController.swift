@@ -76,15 +76,10 @@ final class DetailViewController: UIViewController {
         itemImage.kf.setImage(with: url)
         
         mallName.text = item.mallName
-        itemName.text = replaceText(text: item.title)
+        itemName.text = item.title.replaceText()
         itemPrice.text = NumberFormatter.formatter.StringIntFormat(value: item.lprice)
     }
 
-    private func replaceText(text: String) -> String {
-        var result = text.replacingOccurrences(of: "<b>", with: "")
-        result = result.replacingOccurrences(of: "</b>", with: "")
-        return result
-    }
 
    
 

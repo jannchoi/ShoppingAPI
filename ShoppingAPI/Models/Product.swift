@@ -8,7 +8,7 @@
 import Foundation
 import RealmSwift
 
-class Product: Object {
+final class Product: Object {
     @Persisted(primaryKey: true) var productId : String
     @Persisted(indexed: true) var title : String
     @Persisted var image: String
@@ -23,5 +23,14 @@ class Product: Object {
         self.lprice = lprice
         self.mallName = mallName
     }
+    convenience init(item: itemDetail) {
+        self.init()
+        self.productId = item.productId
+        self.title = item.title
+        self.image = item.image
+        self.lprice = item.lprice
+        self.mallName = item.mallName
+    }
+    
 }
 

@@ -7,7 +7,7 @@
 
 import UIKit
 
-class ShopView: BaseView {
+final class ShopView: BaseView {
     lazy var  collectionView = UICollectionView(frame: .zero, collectionViewLayout: createCollectionViewLayout())
     let toastView = ToastView()
     let titleLabel = UILabel()
@@ -90,7 +90,7 @@ class ShopView: BaseView {
         totalCount.font = .boldSystemFont(ofSize: 15)
         collectionView.backgroundColor = .black
         titleLabel.textColor = .white
-        collectionView.register(SearchResultCollectionViewCell.self, forCellWithReuseIdentifier: "SearchResultCollectionViewCell")
+        collectionView.register(SearchResultCollectionViewCell.self, forCellWithReuseIdentifier: SearchResultCollectionViewCell.id)
         
         
     }

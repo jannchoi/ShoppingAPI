@@ -9,6 +9,19 @@
 import UIKit
 import SnapKit
 final class ToastView: UIView {
+    enum ToastMessage {
+        case like(title: String)
+        case dislike(title: String)
+        
+        var message : String {
+            switch self {
+            case .like(let title):
+                return "\(title) 좋아요!"
+            case .dislike(let title):
+                return "\(title) 안 좋아요!"
+            }
+        }
+    }
     override init(frame: CGRect) {
         super.init(frame: frame)
         self.frame = CGRect(x: 0.0, y: 0.0, width: 380.0, height: 100.0)
@@ -30,9 +43,9 @@ final class ToastView: UIView {
     }
     func setMessage(status: Bool, title: String) {
         if status {
-            message.text = title + " 좋아요!"
+            message.text = ToastMessage.like(title: title).message
         } else {
-            message.text = title + " 안 좋아요!"
+            message.text = ToastMessage.dislike(title: title).message
         }
     }
     required init?(coder: NSCoder) {

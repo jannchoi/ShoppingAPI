@@ -17,7 +17,7 @@ final class LikeButton: UIButton {
     }
     var item: Product?
     
-    init(item: Product) {
+    init(item: Product?) {
         self.item = item
         super.init(frame: .zero)
         tintColor = .red

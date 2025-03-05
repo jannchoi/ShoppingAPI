@@ -7,7 +7,7 @@
 
 import UIKit
 
-class SearchView: BaseView {
+final class SearchView: BaseView {
     
     let searchBar = UISearchBar()
     let titleLabel = UILabel()

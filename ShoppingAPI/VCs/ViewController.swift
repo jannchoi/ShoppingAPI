@@ -52,7 +52,7 @@ final class ViewController: BaseViewController {
     private func barButtonItem() {
         mainSearchView.wishListButton.rx.tap
             .bind(with: self) { owner, _ in
-                owner.navigationController?.pushViewController(WishListViewController(), animated: true)
+                owner.navigationController?.pushViewController(WishFolderViewController(), animated: true)
             }.disposed(by: disposeBag)
         mainSearchView.favoriteButton.rx.tap
             .bind(with: self) { owner, _ in

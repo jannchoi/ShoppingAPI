@@ -19,8 +19,8 @@ final class SearchResultCollectionViewCell: BaseCollectionViewCell {
     let malName = UILabel()
     let itemName = UILabel()
     let lowPrice = UILabel()
-    var likeButton = LikeButton(item: Product(productId: "", title: "", image: "", lprice: "", mallName: ""))
-
+    let likeButton = LikeButton(item: nil)
+    
     override init(frame: CGRect) {
            super.init(frame: frame)
            configureView()
@@ -29,9 +29,8 @@ final class SearchResultCollectionViewCell: BaseCollectionViewCell {
            disposeBag = DisposeBag()
        }
     func configureData(item: itemDetail) {
-
-        let product = Product(productId: item.productId, title: item.title, image: item.image, lprice: item.lprice, mallName: item.mallName)
-        likeButton.item = product
+        
+        likeButton.item = Product(item: item)
         likeButton.prepareDesign()
 
         let url = URL(string: item.image)
@@ -41,11 +40,7 @@ final class SearchResultCollectionViewCell: BaseCollectionViewCell {
         itemName.text = item.title.replaceText()
         lowPrice.text = NumberFormatter.formatter.StringIntFormat(value: item.lprice)
     }
-//    func replaceText(text: String) -> String {
-//        var result = text.replacingOccurrences(of: "<b>", with: "")
-//        result = result.replacingOccurrences(of: "</b>", with: "")
-//        return result
-//    }
+
     override func configureHierachy() {
         contentView.addSubview(itemImage)
         contentView.addSubview(likeButton)
